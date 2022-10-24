@@ -1,6 +1,6 @@
 ## *Project 1*
 
-* Report are found in `Report`
+* Report is found in `Report`
 * All scripts are found in `Src`
 * All figures used in the report can be found in `Figures`
 

@@ -1,12 +1,32 @@
 import numpy as np
 from functions import *
 
-
+"""
+All the stochastic gradient descent methods here calculate gradient of the cost function,
+which is the MSE with an L2-regularisation, using automatic differentiation (JAX)
+"""
 
 def SGD_analytical(X,y,betainit,nepochs,nbatches,eta,lmbda=0,gamma=0):
+    """
+    Stochastic gradient descent with a constant learning rate and optional momentum
+
+    Args:
+        X (ndarray): design matrix
+        y (ndarray): target values
+        betainit (ndarray): inital regression paramteres
+        nepochs (int): number of epochs
+        nbatches (int): number of mini-batches
+        eta (float): learning rate
+        lmbda (float): hyperparameter
+        gamma (float): momentum(friction) parameter
+
+    Returns:
+        beta (ndarray): estimated optimal parameters
+
+    """
+
     np.random.seed(2014)
 
-    
     v = 0
     n = X.shape[0]
 
@@ -20,15 +40,12 @@ def SGD_analytical(X,y,betainit,nepochs,nbatches,eta,lmbda=0,gamma=0):
 
     for epoch in range(nepochs):
             if np.linalg.norm(beta-betaold) < 1e-5:
-                 print(f"Stopped after {epoch} epochs")
-                 return beta
+                    print(f"Stopped after {epoch} epochs")
+                    return beta
             
-            
-                
             for k in range(nbatches):
-
                 betaold = np.copy(beta)
-            
+
                 xk = X[batch[k]]
                 yk = y[batch[k]]
 
@@ -37,63 +54,32 @@ def SGD_analytical(X,y,betainit,nepochs,nbatches,eta,lmbda=0,gamma=0):
                 g = 2.0/M*xk.T @ (xk @ (beta)-yk)+2*lmbda*beta
                 v = gamma*v-eta*g
                 beta += v
-    
-    return beta
-
-
-
-
-def SGD_analytical_scheduler(X,y,betainit,nepochs,nbatches,t0,t1,lmbda=0,gamma=0):
-     
-    np.random.seed(2014)
-
-    
-    v = 0
-    n = X.shape[0]
-
-    beta = np.copy(betainit)
-    betaold = np.zeros((np.shape(beta)))
-
-    ind = np.arange(n)
-    np.random.shuffle(ind)
-
-    batch = np.array_split(ind,nbatches)
-    eta_j = t0/t1
-    j = 0
-    for epoch in range(nepochs):
-            if np.linalg.norm(beta-betaold) < 1e-5:
-                 print(f"Stopped after {epoch} epochs")
-                 return beta
-            
-            
                 
-            for k in range(nbatches):
-
-                betaold = np.copy(beta)
-            
-                xk = X[batch[k]]
-                yk = y[batch[k]]
-
-                M = len(yk)
-            
-                g = 2.0/M*xk.T @ (xk @ (beta)-yk)+2*lmbda*beta
-                v = gamma*v-eta_j*g
-                beta += v
-
-                t = epoch*nbatches+k
-                eta_j = step_length(t,t0,t1)
-                j += 1
-    
+    print(f"Stopped after {nepochs} epochs")
     return beta
-
-
 
 
 def SGD_analytical_Adagrad(X,y,betainit,nepochs,nbatches,eta,delta=1e-7,lmbda=0,gamma=0):
-     
+    """
+    Stochastic gradient descent with Adagrad and optional momentum
+
+    Args:
+        X (ndarray): design matrix
+        y (ndarray): target values
+        betainit (ndarray): inital regression paramteres
+        nepochs (int): number of epochs
+        nbatches (int): number of mini-batches
+        eta (float): global learning rate
+        delta (float): small value for numerical stability
+        lmbda (float): hyperparameter
+        gamma (float): momentum(friction) parameter
+
+    Returns:
+        beta (ndarray): estimated optimal parameters
+    """
+
     np.random.seed(2014)
 
-    
     v = 0
     n = X.shape[0]
 
@@ -112,9 +98,7 @@ def SGD_analytical_Adagrad(X,y,betainit,nepochs,nbatches,eta,delta=1e-7,lmbda=0,
             if np.linalg.norm(beta-betaold) < 1e-5:
                  print(f"Stopped after {epoch} epochs")
                  return beta
-            
-            
-                
+     
             for k in range(nbatches):
 
                 betaold = np.copy(beta)
@@ -130,16 +114,32 @@ def SGD_analytical_Adagrad(X,y,betainit,nepochs,nbatches,eta,delta=1e-7,lmbda=0,
                 beta += v
     
 
-
+    print(f"Stopped after {nepochs} epochs")
     return beta
+  
 
-    
+def SGD_analytical_RMSprop(X,y,betainit,nepochs,nbatches,eta,rho=0.9,delta=1e-7,lmbda=0,gamma=0):
+    """
+    Stochastic gradient descent with RMSProp and optional momentum
 
-def SGD_analytical_RMSprop(X,y,betainit,nepochs,nbatches,eta,rho,delta=1e-7,lmbda=0,gamma=0):
-     
+    Args:
+        X (ndarray): design matrix
+        y (ndarray): target values
+        betainit (ndarray): inital regression paramteres
+        nepochs (int): number of epochs
+        nbatches (int): number of mini-batches
+        eta (float): global learning rate
+        rho (float): decay rate
+        delta (float): small value for numerical stability
+        lmbda (float): hyperparameter
+        gamma (float): momentum(friction) parameter
+
+    Returns:
+        beta (ndarray): estimated optimal parameters
+    """ 
+
     np.random.seed(2014)
 
-    
     v = 0
     n = X.shape[0]
 
@@ -176,16 +176,33 @@ def SGD_analytical_RMSprop(X,y,betainit,nepochs,nbatches,eta,rho,delta=1e-7,lmbd
                 beta += v
     
 
-
+    print(f"Stopped after {nepochs} epochs")
     return beta
 
 
-
 def SGD_analytical_ADAM(X,y,betainit,nepochs,nbatches,eta=0.001,rho1=0.9,rho2=0.999,delta=1e-8,lmbda=0):
-     
+    """
+    Stochastic gradient descent with Adam 
+
+    Args:
+        X (ndarray): design matrix
+        y (ndarray): target values
+        betainit (ndarray): inital regression paramteres
+        nepochs (int): number of epochs
+        nbatches (int): number of mini-batches
+        eta (float): global learning rate
+        rho1(float): decay rate for first moment
+        rho2(float): decay rate for second moment
+        delta (float): small value for numerical stability
+        lmbda (float): hyperparameter
+        gamma (float): momentum(friction) parameter
+
+    Returns:
+        beta (ndarray): estimated optimal parameters
+    """ 
+
     np.random.seed(2014)
 
-    
     v = 0
     n = X.shape[0]
 
@@ -231,7 +248,7 @@ def SGD_analytical_ADAM(X,y,betainit,nepochs,nbatches,eta=0.001,rho1=0.9,rho2=0.
                 beta += v
     
 
-
+    print(f"Stopped after {nepochs} epochs")
     return beta
 
 

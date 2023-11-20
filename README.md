@@ -3,4 +3,5 @@
 This repository contains the projects done by me following the course FYS-STK4155 at the University of Oslo during the fall semester 2023.
 
 * [Project 1](https://github.com/achat97/FYS-STK4155/tree/main/Project1) - Linear Regression Analysis
+* [Project 2](https://github.com/achat97/FYS-STK4155/tree/main/Project2) - Neural Networks and Classification
 

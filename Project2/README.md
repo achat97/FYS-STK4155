@@ -11,6 +11,7 @@ The required packages are
 * `matplotlib`
 * `sklearn`
 * `JAX`
+* `Seaborn`
 
 
 # **Execution**
